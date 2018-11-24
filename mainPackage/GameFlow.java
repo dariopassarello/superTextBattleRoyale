@@ -35,7 +35,8 @@ public class GameFlow
 	
 	
 	
-	private boolean battleRoyale()
+
+	private void battleRoyale()
 	{
 		while(this.playersInGame > 1)
 		{
@@ -60,12 +61,25 @@ public class GameFlow
 			do
 			{
 				res = fight.nextHit();
-				//TODO
+				Narrator.narrateFight(res);
 			}
 			while(res.playersRemaingInFight > 1);
+			for(Player player : this.players)
+			{
+				player.updateHP();
+				if(player.getPoisonAmount() > 0)
+				{
+					Narrator.narratePoison(player);
+				}
+				if(player.getHP() <= 0)
+				{
+					this.killPlayer(player);
+				}
+					
+			}
 		}
 	}
-	
+	@Deprecated
 	private boolean findOrUpgradeWeapon()
 	{
 		Random rand = new Random();
@@ -128,7 +142,7 @@ public class GameFlow
 			}
 		}
 	}
-	
+	@Deprecated
 	private FightResult startFight(int minSleep,int maxSleep)
 	{
 		Random rand = new Random();
@@ -168,6 +182,14 @@ public class GameFlow
 			return null;
 		}
 		
+	}
+	
+	private void killPlayer(Player player)
+	{
+		Player temp = this.players.get(this.playersInGame - 1);
+		this.players.set(this.playersInGame - 1, player);
+		this.players.set(this.players.indexOf(player), temp);
+		this.playersInGame--;
 	}
 	
 	private void randomSleep(int minSleep,int maxSleep)
